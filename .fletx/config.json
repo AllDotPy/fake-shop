@@ -1,0 +1,8 @@
+{
+  "name": "fakeShop",
+  "version": "0.1.0",
+  "author": null,
+  "description": "E-commerce app that uses a fake sotre rest API.",
+  "python_version": "3.12",
+  "fletx_version": "0.1.4.a2"
+}
