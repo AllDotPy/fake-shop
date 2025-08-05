@@ -13,7 +13,8 @@ from fletx.decorators import register_router
 from .pages import (
     CounterPage, NotFoundPage,
     OnboardingPage, LoginPage,
-    RegisterPage, MainPage
+    RegisterPage, MainPage,
+    store
 )
 
 # Define Fakeshop routes here
@@ -37,6 +38,12 @@ routes = [
     {
         'path': '/home',
         'component': MainPage
+    },
+
+    # ACCOUNT URLS
+    {
+        'path': '/profile',
+        'component': store.AccountPage
     },
 
     # UTILITY URLS

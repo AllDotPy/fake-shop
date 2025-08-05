@@ -8,6 +8,7 @@ from flet import *
 from fletx import FletX
 from fletx.core import FletXPage, RxList
 from fletx.widgets import Obx
+from fletx.navigation import navigate
 from fletcarousel import (
     BasicAnimatedHorizontalCarousel,
     AutoCycle, HintLine
@@ -164,11 +165,37 @@ class HomePage(FletXPage):
                     alignment = MainAxisAlignment.SPACE_BETWEEN,
                     vertical_alignment = CrossAxisAlignment.CENTER,
                     controls = [
-                        Text(
-                            f"Hey, {self.user.first_name if self.user else 'Pythonista'}!",
-                            size = 24,
-                            weight = FontWeight.W_500
+                        Row(
+                            spacing = 8,
+                            expand = True,
+                            alignment = MainAxisAlignment.START,
+                            controls = [
+                                CircleAvatar(
+                                    height = 40,
+                                    width = 40,
+                                    bgcolor = Colors.SURFACE,
+                                    content = Text()
+                                ),
+                                Column(
+                                    spacing = 2,
+                                    alignment = MainAxisAlignment.CENTER,
+                                    controls = [
+                                        Text(
+                                            f"Welcome",
+                                            size = 14,
+                                            weight = FontWeight.W_400
+                                        ),
+                                        Text(
+                                            f"Hey, {self.user.first_name if self.user else 'Pythonista'}!",
+                                            size = 16,
+                                            weight = FontWeight.W_500
+                                        )
+                                    ]
+                                ),
+                            ]
                         ),
+                        
+                        
                         IconButton(
                             # icon = Icons.NOTIFICATIONS_NONE_OUTLINED,
                             # icon_color = Colors.ON_SURFACE,
@@ -295,7 +322,7 @@ class HomePage(FletXPage):
                                 Text("Categories", size=16, weight=FontWeight.W_500),
                                 IconButton(
                                     icon_color=Colors.ON_PRIMARY_CONTAINER,
-                                    on_click = lambda e: None,
+                                    on_click = lambda e: navigate('/categories'),
 
                                     content = Row(
                                         controls = [

@@ -146,5 +146,6 @@ class MainPage(FletXPage):
         return SafeArea(
             expand = True,
             minimum_padding = 0,
+            maintain_bottom_view_padding = False,
             content = self.page_content
         )
