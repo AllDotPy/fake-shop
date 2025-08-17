@@ -11,11 +11,15 @@ from .user import UserInfo
 from .category import CategoryInfo
 from .product import ProductInfo
 from .banner import BannerInfo
+from .filter import SearchFilter
+from .cart_item import CartItem
 
 __all__ = [
     'LoginInfo',
     'UserInfo',
     'CategoryInfo',
     'ProductInfo',
-    'BannerInfo'
+    'BannerInfo',
+    'SearchFilter',
+    'CartItem'
 ]

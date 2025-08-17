@@ -6,8 +6,8 @@ This Page class is generated from a template.
 
 from flet import *
 from fletx import FletX
-from fletx.core import FletXPage, RxList
-from fletx.widgets import Obx
+from fletx.core import FletXPage, RxList, RxBool
+from fletx.decorators import obx
 from fletx.navigation import navigate
 from fletcarousel import (
     BasicAnimatedHorizontalCarousel,
@@ -22,7 +22,7 @@ from app.controllers import (
 
 from app.components import (
     FromTextField, Bannerlist, CategoryList,
-    Bannercard, ProductCard
+    Bannercard, ProductCard, ProductGrid
 )
 from app.models import UserInfo, ProductInfo
 from app.utils import BANNERS
@@ -47,13 +47,15 @@ class HomePage(FletXPage):
         self.user: UserInfo
         self.banners: RxList = RxList(BANNERS)
         self.categories: RxList = RxList([])
+        self.products: RxList = RxList([])
+        self.load_more_clicked = False
 
         # Initialize Controllers
         self.usersController: UsersController = FletX.find(
             UsersController, tag = 'users_ctrl'
         )
         self.productsController: ProductsController = FletX.find(
-            ProductsController, tag = 'products_ctrl'
+            ProductsController, tag = 'product_ctrl'
         )
         self.categoryController: CategoriesController = FletX.find(
             CategoriesController, tag = 'category_ctrl'
@@ -87,14 +89,11 @@ class HomePage(FletXPage):
             'user'
         )
         # Categories
-        self.categories.extend(
-            self.categoryController.get_global_context(
-                'categories'
-            )
-        )
+        self.categories = self.categoryController.objects
         
         # Products
-
+        self.products = self.productsController.objects
+            
     def build_categories_tabs(self):
         """Build Categories"""
 
@@ -128,7 +127,7 @@ class HomePage(FletXPage):
                 horizontal = 0
             ),
             runs_count = 2,
-            run_spacing = 2,
+            run_spacing = 5,
             child_aspect_ratio = .80,
             height = self.height,
             controls = [
@@ -136,18 +135,45 @@ class HomePage(FletXPage):
                     padding = 0,
                     expand = True,
                     border_radius = 10,
-                    product = ProductInfo(
-                        title = 'My super product',
-                        slug = 'super-product',
-                        category = self.categories[0],
-                        price = 200,
-                        images = [
-                            'dev1.jpg'
-                        ]
-                    )
-                ) for i in range(16)
+                    product = product
+                ) 
+                for product in self.products
             ]
         )
+
+    @obx
+    def load_more_button(self):
+        """Load more button"""
+        return IconButton(
+            on_click = lambda _: (
+                self.load_more() if (
+                    not self.productsController._is_loading.value
+                    and not self.load_more_clicked
+                ) else None
+            ),
+            content = (
+                ProgressRing(
+                    height = 25,
+                    width = 25,
+                    color = Colors.ON_SURFACE
+                )
+                if self.productsController._is_loading.value and self.load_more_clicked
+                else Text(
+                    'load more...' if self.productsController.has_next.value else 'No more data'
+                ) 
+            )
+        )
+    
+    def load_more(self):
+        """Load more products."""
+
+        self.load_more_clicked = True
+
+        # Automatically load next page if exists
+        if self.productsController.has_next: 
+            self.productsController.all() 
+
+        self.load_more_clicked = False
 
     def build(self)-> Control:
         """Method that build HomePage content"""
@@ -171,10 +197,15 @@ class HomePage(FletXPage):
                             alignment = MainAxisAlignment.START,
                             controls = [
                                 CircleAvatar(
-                                    height = 40,
-                                    width = 40,
+                                    height = 50,
+                                    width = 50,
                                     bgcolor = Colors.SURFACE,
-                                    content = Text()
+                                    foreground_image_src = (
+                                        f'{
+                                            self.user.avatar if self.user 
+                                            else 'https://i.pinimg.com/736x/0b/97/6f/0b976f0a7aa1aa43870e1812eee5a55d.jpg'
+                                        }'
+                                    )
                                 ),
                                 Column(
                                     spacing = 2,
@@ -195,10 +226,11 @@ class HomePage(FletXPage):
                             ]
                         ),
                         
-                        
+                        # NOTIFICATION
                         IconButton(
                             # icon = Icons.NOTIFICATIONS_NONE_OUTLINED,
                             # icon_color = Colors.ON_SURFACE,
+                            on_click = lambda _: navigate('/notifications'),
                             content = Container(
                                 height = 40,
                                 width = 40,
@@ -238,7 +270,8 @@ class HomePage(FletXPage):
                     height = 50,
                     padding = 10,
                     border_radius = 25,
-                    bgcolor = Colors.SURFACE,     
+                    bgcolor = Colors.SURFACE,
+                    on_click = lambda _: navigate('/search'),
 
                     # Content
                     content = FromTextField(
@@ -246,7 +279,9 @@ class HomePage(FletXPage):
                         hint_text = "Search for products...",
                         # rx_value = self.rx_first_name,
                         expand = True,
+                        disabled = True,
                         filled = False,
+                        rx_disabled = RxBool(True),
                         bgcolor = Colors.TRANSPARENT,
                         focused_bgcolor = Colors.TRANSPARENT,
 
@@ -354,9 +389,148 @@ class HomePage(FletXPage):
                     height = 20
                 ),
 
-                # PRODUCTS TABS
-                self.build_categories_tabs(),
 
-                Text("MainPage works!", size=24),
+                # BEST SELLERS
+                Column(
+                    width = self.width,
+                    controls = [
+                        Row(
+                            # expand = True,
+                            alignment = MainAxisAlignment.SPACE_BETWEEN,
+                            vertical_alignment = CrossAxisAlignment.CENTER,
+                            controls = [
+                                Text("Best Seller Products", size=16, weight=FontWeight.W_500),
+                                IconButton(
+                                    icon_color=Colors.ON_PRIMARY_CONTAINER,
+                                    on_click = lambda e: navigate('/categories'),
+
+                                    content = Row(
+                                        controls = [
+                                            Text("See all", size=14, weight=FontWeight.W_500),
+                                            Icon(Icons.ARROW_FORWARD, size=16, color=Colors.ON_PRIMARY_CONTAINER)
+                                        ]
+                                    )
+                                )
+                            ]
+                        ),
+
+                        # CATEGORY LIST
+                        Container(
+                            height = 220,
+                            width = self.width,
+                            # bgcolor = 'red',
+                            content = ListView(
+                                spacing = 10,
+                                expand = True,
+                                horizontal = True,
+                                controls = [
+                                    ProductCard(product = product)
+                                    for product in self.products.value[:10]
+                                ]
+                            )
+                        )
+                    ]
+                ),
+
+                # SPACER
+                Container(
+                    height = 20
+                ),
+
+                # LATEST PRODUCTS
+                Column(
+                    width = self.width,
+                    controls = [
+                        Row(
+                            # expand = True,
+                            alignment = MainAxisAlignment.SPACE_BETWEEN,
+                            vertical_alignment = CrossAxisAlignment.CENTER,
+                            controls = [
+                                Text("Latest Products", size=16, weight=FontWeight.W_500),
+                                IconButton(
+                                    icon_color=Colors.ON_PRIMARY_CONTAINER,
+                                    on_click = lambda e: navigate('/products/latest'),
+
+                                    content = Row(
+                                        controls = [
+                                            Text("See all", size=14, weight=FontWeight.W_500),
+                                            Icon(Icons.ARROW_FORWARD, size=16, color=Colors.ON_PRIMARY_CONTAINER)
+                                        ]
+                                    )
+                                )
+                            ]
+                        ),
+
+                        # CATEGORY LIST
+                        Container(
+                            height = 220,
+                            width = self.width,
+                            # bgcolor = 'red',
+                            content = ListView(
+                                spacing = 10,
+                                expand = True,
+                                horizontal = True,
+                                controls = [
+                                    ProductCard(product = product)
+                                    for product in self.products.value[10:20]
+                                ]
+                            )
+                        )
+                    ]
+                ),
+
+                # SPACER
+                Container(
+                    height = 20
+                ),
+
+                Row(
+                    # expand = True,
+                    alignment = MainAxisAlignment.SPACE_BETWEEN,
+                    vertical_alignment = CrossAxisAlignment.CENTER,
+                    controls = [
+                        Text("Browse Our Products", size=16, weight=FontWeight.W_500),
+                        IconButton(
+                            icon_color=Colors.ON_PRIMARY_CONTAINER,
+                            on_click = lambda e: navigate('/products'),
+
+                            content = Row(
+                                controls = [
+                                    Text("See all", size=14, weight=FontWeight.W_500),
+                                    Icon(Icons.ARROW_FORWARD, size=16, color=Colors.ON_PRIMARY_CONTAINER)
+                                ]
+                            )
+                        )
+                    ]
+                ),
+
+                # PRODUCTS GRID
+                ProductGrid(
+                    products = self.products,
+                    spacing = 10,
+                    expand = True,
+                    width = self.width,
+                    padding = padding.symmetric(
+                        vertical = 5,
+                        horizontal = 0
+                    ),
+                    runs_count = 2,
+                    run_spacing = 5,
+                    child_aspect_ratio = .80,
+                    height = self.height,
+                    build_controls_on_demand = True,
+                    cache_extent = 10
+                ),
+
+                # SPACER
+                Container(
+                    height = 10
+                ),
+
+                self.load_more_button()
+
+                # self.build_categories_tabs(),
+
+                # Text("MainPage works!", size=24),
             ]
         )

@@ -9,8 +9,9 @@ from flet import *
 from fletx import FletX
 from typing import List, Optional
 from fletx.core import FletXPage
-from fletx.decorators import obx
+# from fletx.decorators import obx
 from fletx.widgets import Obx
+from app.utils import show_snackbar, show_loader
 
 # Import your modules here...
 from .store import (
@@ -18,7 +19,10 @@ from .store import (
     ShoppingCartPage, AccountPage,
     OrdersPage
 )
-from app.controllers import AuthController
+from app.controllers import (
+    AuthController, ProductsController,
+    CategoriesController
+)
 
 
 class MainPage(FletXPage):
@@ -33,9 +37,15 @@ class MainPage(FletXPage):
             bgcolor = Theme.scaffold_bgcolor
         )
 
-        # Inject Auth COntroller
+        # Inject Controllers
         self.auth_controller: AuthController = FletX.find(
             AuthController, tag = 'auth_ctrl'
+        )
+        self.products_controller: ProductsController = FletX.find(
+            ProductsController, tag = 'product_ctrl'
+        )
+        self.categories_controller: CategoriesController = FletX.find(
+            CategoriesController, tag = 'category_ctrl'
         )
 
         self.current_index = self.auth_controller.create_rx_int(0)
@@ -43,10 +53,13 @@ class MainPage(FletXPage):
         # Store current page content
         self.page_content: Optional[FletXPage] = None
 
+        # self.load_data()
+
         # Build first content
         self.change_content(
             self.current_index.value
         )
+
 
     def on_init(self):
         """Hook called when MainPage in initialized"""
@@ -63,21 +76,96 @@ class MainPage(FletXPage):
                 update = True
             )
         )
+
+        self.setup_reactivity()
         
     def on_destroy(self):
         """Hook called when MainPage will be unmounted."""
 
         print("MainPage is destroyed")
 
+    def load_data(self):
+        """Load all data"""
+
+        # Get Categories
+        if not (self.categories_controller.objects):
+            self.categories_controller.all()
+
+        # Products
+        if not len(self.products_controller.objects) > 0:
+            self.products_controller.all()
+
+    def setup_reactivity(self):
+        """Setup Ui reactivity observers"""
+
+        # Data Loading
+        self.watch(
+            self.auth_controller._is_loading,
+            lambda: show_loader(
+                controller = self.auth_controller,
+                page = self.page_instance,
+                message = 'Please wait a second.'
+            ),
+            immediate = True,
+        )
+        self.watch(
+            self.categories_controller._is_loading,
+            lambda: show_loader(
+                controller = self.categories_controller,
+                page = self.page_instance
+            ),
+            immediate = True,
+        )
+        # self.watch(
+        #     self.products_controller._is_loading,
+        #     lambda: show_loader(
+        #         controller = self.products_controller,
+        #         page = self.page_instance
+        #     ),
+        #     immediate = True,
+        # )
+        
+        # Errors
+        self.watch(
+            self.auth_controller._error_message,
+            lambda: show_snackbar(
+                type = 'error',
+                page = self.page_instance,
+                title = 'Oopss an error occrus!',
+                message = self.auth_controller._error_message.value
+            ) if self.auth_controller._error_message.value != '' else None,
+            immediate = True
+        )
+        self.watch(
+            self.categories_controller._error_message,
+            lambda: show_snackbar(
+                type = 'error',
+                page = self.page_instance,
+                title = 'Oopss an error occrus!',
+                message = self.categories_controller._error_message.value
+            ) if self.categories_controller._error_message.value != '' else None,
+            immediate = True
+        )
+        self.watch(
+            self.products_controller._error_message,
+            lambda: show_snackbar(
+                type = 'error',
+                page = self.page_instance,
+                title = 'Oopss an error occrus!',
+                message = self.products_controller._error_message.value
+            ) if self.products_controller._error_message.value != '' else None,
+            immediate = True
+        )
+
     def change_content(self,index: int = 0, update: bool = False):
         """Change page content"""
 
         pages: List[FletXPage] = [
-            HomePage,
-            FavoritesPage,
-            ShoppingCartPage,
-            OrdersPage,
-            AccountPage,
+            HomePage(),
+            FavoritesPage(),
+            ShoppingCartPage(),
+            OrdersPage(),
+            AccountPage(),
         ]
 
         # Dispose existing page content
@@ -86,7 +174,7 @@ class MainPage(FletXPage):
             self.page_content.dispose()
             # gc.collect()# self.page_content
 
-        self.page_content = pages[index]()
+        self.page_content = pages[index]
         self.page_content._build_page()
 
         if update:
@@ -114,27 +202,95 @@ class MainPage(FletXPage):
             destinations = [
                 NavigationBarDestination(
                     icon = Icons.STORE_MALL_DIRECTORY_OUTLINED,
-                    selected_icon = Icons.STORE_MALL_DIRECTORY,
+                    selected_icon = Icon(
+                        Icons.STORE_MALL_DIRECTORY,
+                        color = Colors.ON_PRIMARY
+                    ),
                     label = "Store"
                 ),
                 NavigationBarDestination(
                     icon = Icons.FAVORITE_BORDER_OUTLINED,
-                    selected_icon = Icons.FAVORITE,
+                    selected_icon = Icon(
+                        Icons.FAVORITE,
+                        color = Colors.ON_PRIMARY
+                    ),
                     label = "Favorites"
                 ),
                 NavigationBarDestination(
-                    icon = Icons.SHOPPING_CART_OUTLINED,
-                    selected_icon = Icons.SHOPPING_CART,
+                    icon = Stack(
+                        expand = True,
+                        clip_behavior = ClipBehavior.NONE,
+                        controls = [
+                            Icon(
+                                Icons.SHOPPING_CART_OUTLINED,
+                                # color = Colors.ON_PRIMARY
+                            ),
+                            Obx(
+                                builder_fn = lambda: Container(
+                                    top = -15,
+                                    right = -15,
+                                    padding = 2,
+                                    border_radius = 20,
+                                    bgcolor = Colors.ERROR,
+                                    width = max(25,len(f'{len(self.products_controller.shopping_cart.value)}') * 15),
+                                    visible = len(self.products_controller.shopping_cart.value) != 0,
+                                    content = Text(
+                                        f'{len(self.products_controller.shopping_cart.value)}',
+                                        size = 14,
+                                        weight = FontWeight.BOLD,
+                                        color = Colors.ON_PRIMARY,
+                                        text_align = TextAlign.CENTER,
+                                        width = max(25,len(f'{len(self.products_controller.shopping_cart.value)}') * 15),
+                                    )
+                                )
+                            )
+                        ]
+                    ),
+                    selected_icon = Stack(
+                        expand = True,
+                        clip_behavior = ClipBehavior.NONE,
+                        controls = [
+                            Icon(
+                                Icons.SHOPPING_CART,
+                                color = Colors.ON_PRIMARY
+                            ),
+                            Obx(
+                                builder_fn = lambda: Container(
+                                    top = -15,
+                                    right = -15,
+                                    padding = 2,
+                                    border_radius = 20,
+                                    bgcolor = Colors.ERROR,
+                                    width = max(25,len(f'{len(self.products_controller.shopping_cart.value)}') * 15),
+                                    visible = len(self.products_controller.shopping_cart.value) != 0,
+                                    content = Text(
+                                        f'{len(self.products_controller.shopping_cart.value)}',
+                                        size = 14,
+                                        weight = FontWeight.BOLD,
+                                        color = Colors.ON_PRIMARY,
+                                        text_align = TextAlign.CENTER,
+                                        width = max(25,len(f'{len(self.products_controller.shopping_cart.value)}') * 15),
+                                    )
+                                )
+                            )
+                        ]
+                    ),
                     label = "Cart"
                 ),
                 NavigationBarDestination(
                     icon = Icons.SHOPPING_BAG_OUTLINED,
-                    selected_icon = Icons.SHOPPING_BAG,
+                    selected_icon = Icon(
+                        Icons.SHOPPING_BAG,
+                        color = Colors.ON_PRIMARY
+                    ),
                     label = "Orders"
                 ),
                 NavigationBarDestination(
                     icon = Icons.PERSON_OUTLINE,
-                    selected_icon = Icons.PERSON,
+                    selected_icon = Icon(
+                        Icons.PERSON,
+                        color = Colors.ON_PRIMARY
+                    ),
                     label = "Profile"
                 )
             ]

@@ -11,7 +11,9 @@ from fletx.widgets import Obx
 from fletx.navigation import navigate
 
 # Import your modules here...
-from app.controllers import CategoriesController
+from app.controllers import (
+    CategoriesController, ProductsController
+)
 from app.utils import show_snackbar, show_loader
 
 
@@ -31,6 +33,9 @@ class OnboardingPage(FletXPage):
         self.categoryController: CategoriesController = FletX.find(
             CategoriesController, tag = 'category_ctrl'
         )
+        self.products_controller: ProductsController = FletX.find(
+            ProductsController, tag = 'product_ctrl'
+        )
 
     def on_init(self):
         """Hook called when OnboardingPage in initialized"""
@@ -44,6 +49,17 @@ class OnboardingPage(FletXPage):
             ),
             immediate = True,
         )
+        # WATCH PRODUCTS CONTROLLER
+        self.watch(
+            self.products_controller._is_loading,
+            lambda: show_loader(
+                controller = self.products_controller,
+                page = self.page_instance
+            ),
+            immediate = True,
+        )
+
+        ## ERRORS
         self.watch(
             self.categoryController._error_message,
             lambda: show_snackbar(
@@ -54,6 +70,16 @@ class OnboardingPage(FletXPage):
             ) if self.categoryController._error_message.value != '' else None,
             immediate = True
         )
+        self.watch(
+            self.products_controller._error_message,
+            lambda: show_snackbar(
+                type = 'error',
+                page = self.page_instance,
+                title = 'Oopss an error occrus!',
+                message = self.products_controller._error_message.value
+            ) if self.products_controller._error_message.value != '' else None,
+            immediate = True
+        )
 
         # Wait one second before starting animation
         import time
@@ -61,11 +87,12 @@ class OnboardingPage(FletXPage):
         self.animation_opacity.value = 1
 
         # Fetch categories only if needed
-        if not self.categoryController.has_context('categories'):
-            self.categoryController.set_global_context(
-                'categories',
-                self.categoryController.all()
-            )
+        if not len(self.categoryController.objects) > 0:
+            self.categoryController.all()
+
+        # Products
+        if not len(self.products_controller.objects) > 0:
+            self.products_controller.all()
 
     def on_destroy(self):
         """Hook called when OnboardingPage will be unmounted."""

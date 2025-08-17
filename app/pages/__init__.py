@@ -11,6 +11,9 @@ from .onboarding_page import OnboardingPage
 from .auth.login_page import LoginPage
 from .auth.register_page import RegisterPage
 from .main_page import MainPage
+from .shared.producrdetails_page import ProducrDetailsPage
+from .shared.notifications_page import NotificationsPage
+from .shared.search_page import SearchPage
 
 __all__ = [
     'CounterPage',
@@ -18,5 +21,8 @@ __all__ = [
     'OnboardingPage',
     'LoginPage',
     'RegisterPage',
-    'MainPage'
+    'MainPage',
+    'ProducrDetailsPage',
+    'NotificationsPage',
+    'SearchPage'
 ]

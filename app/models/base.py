@@ -1,6 +1,11 @@
 import datetime
-from typing import Dict, Any, TypeVar, Type, Union
-from dataclasses import dataclass, asdict, fields
+from typing import (
+    Dict, Any, TypeVar, Type, Union, List, 
+    get_origin, get_args
+)
+from dataclasses import (
+    dataclass, asdict, fields, is_dataclass
+)
 import json
 
 T = TypeVar('T', bound='BaseModel')
@@ -17,8 +22,23 @@ class BaseModel:
         """
         Converts model fields into a dictionary.
         """
+
+        def convert_value(value):
+            # Date
+            if isinstance(value, datetime.date):
+                return str(value)
+            
+            # Model objects
+            elif isinstance(value, BaseModel):
+                return value.to_json()
+            
+            # Lists
+            elif isinstance(value, list):
+                return [convert_value(item) for item in value]
+            return value
+
         return {
-            k: str(v) if isinstance(v, datetime.date) else v
+            k: convert_value(v)
             for k, v in asdict(self).items()
             if v is not None
         }
@@ -34,31 +54,49 @@ class BaseModel:
         """
         Loads model from a dictionary.
         """
-        # Create a new instance
-        instance = cls.__new__(cls)
+        if json_dict is None:
+            return None
 
         field_types = {f.name: f.type for f in fields(cls)}
-        for k, v in json_dict.items():
-            if k in field_types:
-                field_type = field_types[k]
-                if hasattr(field_type, '__origin__') and field_type.__origin__ is Union:
-                    # Handle Optional types
-                    field_type = field_type.__args__[0]
-
-                if isinstance(v, field_type):
-                    setattr(instance, k, v)
-
-                elif field_type == datetime.date and isinstance(v, str):
-                    setattr(instance, k, datetime.date.fromisoformat(v))
-
-                else:
-                    setattr(instance, k, field_type(v))
+        init_kwargs = {}
+        
+        for field_name, field_type in field_types.items():
+            if field_name not in json_dict:
+                continue
+                
+            value = json_dict[field_name]
+            if value is None:
+                init_kwargs[field_name] = None
+                continue
+                
+            # Handle Optional/Union types
+            if get_origin(field_type) is Union:
+                field_type = [t for t in get_args(field_type) if t is not type(None)][0]  # noqa: E721
             
-        # Ensure __init__ is called if there are any initialization steps
-        # if hasattr(instance, '__init__'):
-        #     instance.__init__()
-
-        return instance
+            # Handle list of models
+            if get_origin(field_type) is list or get_origin(field_type) is List:
+                item_type = get_args(field_type)[0]
+                if is_dataclass(item_type) and issubclass(item_type, BaseModel):
+                    init_kwargs[field_name] = [item_type.from_json(item) for item in value]
+                else:
+                    init_kwargs[field_name] = [item_type(item) for item in value]
+            
+            # Handle nested models
+            elif is_dataclass(field_type) and issubclass(field_type, BaseModel):
+                init_kwargs[field_name] = field_type.from_json(value)
+            
+            # Handle datetime
+            elif field_type == datetime.date and isinstance(value, str):
+                init_kwargs[field_name] = datetime.date.fromisoformat(value)
+            
+            # Handle simple types
+            else:
+                try:
+                    init_kwargs[field_name] = field_type(value)
+                except (TypeError, ValueError):
+                    init_kwargs[field_name] = value
+        
+        return cls(**init_kwargs)
     
     @classmethod
     def from_json_string(cls: Type[T], json_str: str) -> T:

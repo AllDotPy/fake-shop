@@ -15,7 +15,7 @@ class CategoriesService(FletXService):
     """Categories Service"""
 
     def __init__(self, *args, **kwargs):
-        self.base_url = "http://localhost:12000"
+        self.base_url = "http://localhost:10000"
 
         # Init base class
         super().__init__(
@@ -37,14 +37,18 @@ class CategoriesService(FletXService):
     def get_token(self, name:str):
         """Return saved token from Client Storage"""
 
-        tokens: dict = get_storage().get('tokens') or {}
+        tokens: dict = (
+            get_storage().get('tokens') 
+            if get_storage().contains_key('tokens')
+            else {}
+        )
         return tokens.get(name)
     
     def all(self):
         """Get All Product categories"""
 
         return self.http_client.get(
-            endpoint = '/billflow/categories',
+            endpoint = '/categories/',
             headers = {
                 'Content-Type': 'application/json',
             }
@@ -53,13 +57,13 @@ class CategoriesService(FletXService):
     def retrieve(self, id:int):
         """Retrieve category by a given id"""
 
-        token = self.get_token('access')
+        # token = self.get_token('access')
 
         return self.http_client.get(
-            endpoint = f'/billflow/categories/{id}',
+            endpoint = f'/categories/{id}',
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                # 'Authorizations': f'Bearer {token}'
             }
         )
     
@@ -69,7 +73,7 @@ class CategoriesService(FletXService):
         token = self.get_token('access')
 
         return self.http_client.get(
-            endpoint = f'/billflow/categories/slug/{slug}',
+            endpoint = f'/categories/slug/{slug}',
             headers = {
                 'Content-Type': 'application/json',
                 'Authorizations': f'Bearer {token}'
@@ -87,11 +91,11 @@ class CategoriesService(FletXService):
         }
 
         return self.http_client.post(
-            endpoint = f'/billflow/categories',
+            endpoint = f'/categories',
             json_data = payload,
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                'Authorization': f'Bearer {token}'
             }
         )
     def update(self, id: int, category: CategoryInfo):
@@ -105,11 +109,11 @@ class CategoriesService(FletXService):
         }
 
         return self.http_client.put(
-            endpoint = f'/billflow/categories/{id}',
+            endpoint = f'/categories/{id}',
             json_data = payload,
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                'Authorization': f'Bearer {token}'
             }
         )
     
@@ -119,23 +123,23 @@ class CategoriesService(FletXService):
         token = self.get_token('access')
 
         return self.http_client.delete(
-            endpoint = f'/billflow/categories/{id}',
+            endpoint = f'/categories/{id}',
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                'Authorization': f'Bearer {token}'
             }
         )
     
     def get_category_products(self,id: int):
         """Get all products from a given category."""
 
-        token = self.get_token('access')
+        # token = self.get_token('access')
 
         return self.http_client.delete(
-            endpoint = f'/billflow/categories/{id}/products',
+            endpoint = f'/categories/{id}/products',
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                # 'Authorizations': f'Bearer {token}'
             }
         )
     

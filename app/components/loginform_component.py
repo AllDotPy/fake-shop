@@ -144,7 +144,7 @@ class Loginform(Column):    # 🧩 You can replace ft.Container with any other F
                     password = from_values.get('password', '')
                 )
             )
-            print(f"Submitted Form: {from_values}")
+
             if not res:
                 # If login failed, show error
                 self.process_errors({"":self.authController._error_message.value})

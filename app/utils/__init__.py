@@ -37,7 +37,11 @@ def get_http_error_message(res: HTTPResponse):
     return "An unexpected error occurred, please try again later."
 
 ####    SHOW LOADER
-def show_loader(controller: FletXController,page: Page):
+def show_loader(
+    controller: FletXController,
+    page: Page,
+    message: str = 'loading data',
+):
         """Show loading when controller is in loading state."""
 
         if hasattr(show_loader,'dlg'):
@@ -47,7 +51,7 @@ def show_loader(controller: FletXController,page: Page):
             dlg = AlertDialog(
                 content_padding = 10,
                 title = Text(
-                    "Fetching News....",
+                    message,
                     size = 14,
                     text_align = TextAlign.CENTER
                 ),

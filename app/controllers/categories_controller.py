@@ -14,7 +14,7 @@ This controller class is generated from a template.
 from typing import List, Optional
 from fletx import FletX
 from fletx.core import (
-    FletXController
+    FletXController, RxList
 )
 
 from app.services import CategoriesService
@@ -30,6 +30,9 @@ class CategoriesController(FletXController):
             CategoriesService(), tag = 'category_srv'
         )
         super().__init__()
+
+        # Global categories list
+        self.objects: RxList[CategoryInfo] = self.create_rx_list([])
 
     def on_initialized(self):
         """Hook called when initializing controller"""
@@ -56,11 +59,6 @@ class CategoriesController(FletXController):
 
             if res.ok and res.is_json:
                 # Then parse ans return category list
-                # cats = res.json().get('results')
-                # for cat in cats:
-                #     category = CategoryInfo.from_json(cat)
-                #     result.append(category)
-                #     print(f"Added category: {category.name}")
                 result = [
                     CategoryInfo.from_json(cat) 
                     for cat 
@@ -78,6 +76,7 @@ class CategoriesController(FletXController):
 
         finally:
             self.set_loading(False)
+            self.objects.extend(result)
             return result
         
     def retrieve(self, id: int) -> CategoryInfo:

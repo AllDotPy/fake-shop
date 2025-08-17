@@ -12,6 +12,6 @@ class CategoryInfo(BaseModel):
 
     name: str
     image: Optional[str] = None
-    slug: Optional[str] = None
+    code: Optional[str] = None
     id: Optional[str] = None
 

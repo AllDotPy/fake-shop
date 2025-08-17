@@ -56,6 +56,7 @@ class CategoryCard(Container):
 
         return Column(
             spacing = 10,
+            width = 100,
             alignment = MainAxisAlignment.CENTER,
             horizontal_alignment = CrossAxisAlignment.CENTER,
             controls = [
@@ -69,7 +70,10 @@ class CategoryCard(Container):
                 # CATEGORY NAME
                 Text(
                     self.category.name,
+                    width = 100,
                     size = 11,
+                    max_lines = 2,
+                    text_align = TextAlign.CENTER,
                     weight = FontWeight.W_400
                 )
             ]

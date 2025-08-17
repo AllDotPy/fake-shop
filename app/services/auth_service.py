@@ -16,7 +16,7 @@ class AuthService(FletXService):
     """Auth Service"""
 
     def __init__(self, *args, **kwargs):
-        self.base_url = "http://localhost:12000"
+        self.base_url = "http://localhost:10000"
 
         # Init base class
         super().__init__(
@@ -38,7 +38,11 @@ class AuthService(FletXService):
     def get_token(self, name:str):
         """Return saved token from Client Storage"""
 
-        tokens: dict = get_storage().get('tokens') or {}
+        tokens: dict = (
+            get_storage().get('tokens') 
+            if get_storage().contains_key('tokens')
+            else {}
+        )
         return tokens.get(name)
 
     def refresh_token(self):

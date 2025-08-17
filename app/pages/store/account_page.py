@@ -151,7 +151,13 @@ class AccountPage(FletXPage):
                         controls = [
                             CircleAvatar(
                                 height = 80,
-                                width = 80
+                                width = 80,
+                                foreground_image_src = (
+                                        f'{
+                                            self.user.avatar if self.user 
+                                            else 'https://i.pinimg.com/736x/0b/97/6f/0b976f0a7aa1aa43870e1812eee5a55d.jpg'
+                                        }'
+                                    )
                             ),
 
                             # TEXT

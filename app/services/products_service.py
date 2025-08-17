@@ -16,7 +16,7 @@ class ProductsService(FletXService):
     """Products Service"""
 
     def __init__(self, *args, **kwargs):
-        self.base_url = "http://localhost:12000"
+        self.base_url = "http://localhost:10000"
 
         # Init base class
         super().__init__(
@@ -38,7 +38,11 @@ class ProductsService(FletXService):
     def get_token(self, name:str):
         """Return saved token from Client Storage"""
 
-        tokens: dict = get_storage().get('tokens') or {}
+        tokens: dict = (
+            get_storage().get('tokens') 
+            if get_storage().contains_key('tokens')
+            else {}
+        )
         return tokens.get(name)
 
     def all(
@@ -49,43 +53,27 @@ class ProductsService(FletXService):
     ):
         """List All products with pagination support."""
 
-        token = self.get_token('access')
-
         params = query + '&' if query != '' else query
 
-        flters = f'?{params}ofset={page * limit}&limit={limit}'
+        flters = f'?{params}offset={page * limit}&limit={limit}'
 
         return self.http_client.get(
-            endpoint = f'/products{flters}',
+            endpoint = f'/products/{flters}',
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
             }
         )
     
     def retrieve(self, id: int):
         """Retrieve a product with a given id"""
 
-        token = self.get_token('access')
+        # token = self.get_token('access')
 
         return self.http_client.get(
             endpoint = f'/products/{id}',
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
-            }
-        )
-    
-    def retrieve(self, slug: str):
-        """Retrieve a product with a given slug"""
-
-        token = self.get_token('access')
-
-        return self.http_client.get(
-            endpoint = f'/products/slug/{slug}',
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                # 'Authorization': f'Bearer {token}'
             }
         )
     
@@ -102,19 +90,19 @@ class ProductsService(FletXService):
     ):
         """Filter products"""
 
-        qstr = '?'
+        qstr = ''
 
         # Apply title
         if title:
-            qstr += f'title={title}'
+            qstr += f'search={title}'
 
         # Category By ID
         if categoryId:
-            qstr += f'&categoryId={categoryId}'
+            qstr += f'&category__id={categoryId}'
 
         # Category Slug
-        if categorySlug:
-            qstr += f'&categorySlug={categorySlug}'
+        # if categorySlug:
+        #     qstr += f'&categorySlug={categorySlug}'
 
         # Price
         if price:
@@ -122,11 +110,11 @@ class ProductsService(FletXService):
 
         # Price min
         elif price_min:
-            qstr += f'&price_min={price_min}'
+            qstr += f'&price__gte={price_min}'
 
         # Price max
         elif price_max:
-            qstr += f'&price_max={price_max}'
+            qstr += f'&price__lte={price_max}'
 
         return self.all(
             page = page, limit = limit,
@@ -137,26 +125,10 @@ class ProductsService(FletXService):
     def get_related(self, id: int):
         """Get products Realted to a product with a given id"""
 
-        token = self.get_token('access')
-
         return self.http_client.get(
             endpoint = f'/products/{id}/relatted',
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
-            }
-        )
-    
-    def get_slug_related(self, slug: str):
-        """Get products Realted to a product with a given slug"""
-
-        token = self.get_token('access')
-
-        return self.http_client.get(
-            endpoint = f'/products/slug/{slug}/relatted',
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
             }
         )
     
@@ -178,7 +150,7 @@ class ProductsService(FletXService):
             json_data = payload,
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                'Authorization': f'Bearer {token}'
             }
         )
     
@@ -192,7 +164,7 @@ class ProductsService(FletXService):
             json_data = product.to_json(),
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                'Authorization': f'Bearer {token}'
             }
         )
     
@@ -205,6 +177,20 @@ class ProductsService(FletXService):
             endpoint = f'/products/{id}',
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                'Authorization': f'Bearer {token}'
             }
         )
+    
+    def like(self, id: str, action: str = 'post'):
+        """Perform Like/dislike action on a product."""
+
+        token = self.get_token('access')
+
+        return self.http_client.request(
+                method = action,
+                endpoint = f'/products/{id}/like',
+                headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': f'Bearer {token}'
+                }
+            ) 

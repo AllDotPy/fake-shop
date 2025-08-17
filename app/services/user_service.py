@@ -15,7 +15,7 @@ class UserService(FletXService):
     """User Service"""
 
     def __init__(self, *args, **kwargs):
-        self.base_url = "http://localhost:12000"
+        self.base_url = "http://localhost:10000"
 
         # Init base class
         super().__init__(
@@ -37,7 +37,11 @@ class UserService(FletXService):
     def get_token(self, name:str):
         """Return saved token from Client Storage"""
 
-        tokens: dict = get_storage().get('tokens') or {}
+        tokens: dict = (
+            get_storage().get('tokens') 
+            if get_storage().contains_key('tokens')
+            else {}
+        )
         return tokens.get(name)
 
     def all(self):
@@ -50,7 +54,7 @@ class UserService(FletXService):
             endpoint = '/accounts/users',
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                'Authorization': f'Bearer {token}'
             }
         )
     
@@ -64,14 +68,14 @@ class UserService(FletXService):
             endpoint = f'/accounts/users/{id}',
             headers = {
                 'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
+                'Authorization': f'Bearer {token}'
             }
         )
     
     def create(self, user: UserInfo,):
         """Create a new user with a given informations."""
 
-        # token = self.get_token('access')
+        token = self.get_token('access')
         payload = user.to_json()
         payload.pop('id', None)  # Ensure 'id' is not included in the payload
 
@@ -81,7 +85,7 @@ class UserService(FletXService):
             json_data = user.to_json(),
             headers = {
                 'Content-Type': 'application/json',
-                # 'Authorizations': f'Bearer {token}'
+                'Authorization': f'Bearer {token}'
             }
         )
     
