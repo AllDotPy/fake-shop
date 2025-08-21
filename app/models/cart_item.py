@@ -5,7 +5,7 @@ from .base import BaseModel
 from .product import ProductInfo
 
 ####
-##      CATEGORY INFO
+##      ORDER INFO
 #####
 @dataclass
 class CartItem(BaseModel):

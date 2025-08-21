@@ -21,7 +21,7 @@ from .store import (
 )
 from app.controllers import (
     AuthController, ProductsController,
-    CategoriesController
+    CategoriesController, OrderController
 )
 
 
@@ -47,6 +47,9 @@ class MainPage(FletXPage):
         self.categories_controller: CategoriesController = FletX.find(
             CategoriesController, tag = 'category_ctrl'
         )
+        self.order_controller: OrderController = FletX.find(
+            OrderController, tag = 'order_ctrl'
+        )
 
         self.current_index = self.auth_controller.create_rx_int(0)
 
@@ -59,7 +62,6 @@ class MainPage(FletXPage):
         self.change_content(
             self.current_index.value
         )
-
 
     def on_init(self):
         """Hook called when MainPage in initialized"""
@@ -94,6 +96,10 @@ class MainPage(FletXPage):
         # Products
         if not len(self.products_controller.objects) > 0:
             self.products_controller.all()
+        
+        # Orders
+        if not len(self.order_controller.objects) > 0:
+            self.order_controller.all()
 
     def setup_reactivity(self):
         """Setup Ui reactivity observers"""
@@ -154,6 +160,16 @@ class MainPage(FletXPage):
                 title = 'Oopss an error occrus!',
                 message = self.products_controller._error_message.value
             ) if self.products_controller._error_message.value != '' else None,
+            immediate = True
+        )
+        self.watch(
+            self.order_controller._error_message,
+            lambda: show_snackbar(
+                type = 'error',
+                page = self.page_instance,
+                title = 'Oopss an error occrus!',
+                message = self.order_controller._error_message.value
+            ) if self.order_controller._error_message.value != '' else None,
             immediate = True
         )
 

@@ -12,7 +12,8 @@ from fletx.navigation import navigate
 
 # Import your modules here...
 from app.controllers import (
-    CategoriesController, ProductsController
+    CategoriesController, ProductsController,
+    OrderController
 )
 from app.utils import show_snackbar, show_loader
 
@@ -36,6 +37,9 @@ class OnboardingPage(FletXPage):
         self.products_controller: ProductsController = FletX.find(
             ProductsController, tag = 'product_ctrl'
         )
+        self.order_controller: OrderController = FletX.find(
+            OrderController, tag = 'order_ctrl'
+        )
 
     def on_init(self):
         """Hook called when OnboardingPage in initialized"""
@@ -54,7 +58,19 @@ class OnboardingPage(FletXPage):
             self.products_controller._is_loading,
             lambda: show_loader(
                 controller = self.products_controller,
-                page = self.page_instance
+                page = self.page_instance,
+                message = 'fetching Products..'
+            ),
+            immediate = True,
+        )
+
+        # WATCH ORDER CONTROLLER
+        self.watch(
+            self.order_controller._is_loading,
+            lambda: show_loader(
+                controller = self.order_controller,
+                page = self.page_instance,
+                 message = 'fetching Orders..'
             ),
             immediate = True,
         )
@@ -80,6 +96,16 @@ class OnboardingPage(FletXPage):
             ) if self.products_controller._error_message.value != '' else None,
             immediate = True
         )
+        self.watch(
+            self.order_controller._error_message,
+            lambda: show_snackbar(
+                type = 'error',
+                page = self.page_instance,
+                title = 'Oopss an error occrus!',
+                message = self.order_controller._error_message.value
+            ) if self.order_controller._error_message.value != '' else None,
+            immediate = True
+        )
 
         # Wait one second before starting animation
         import time
@@ -93,6 +119,9 @@ class OnboardingPage(FletXPage):
         # Products
         if not len(self.products_controller.objects) > 0:
             self.products_controller.all()
+
+        # Orders
+        self.order_controller.all()
 
     def on_destroy(self):
         """Hook called when OnboardingPage will be unmounted."""

@@ -10,6 +10,7 @@ from .categories_controller import CategoriesController
 from .products_controller import ProductsController
 from .users_controller import UsersController
 from .search_controller import SearchController
+from .order_controller import OrderController
 
 __all__ = [
     'CounterController',
@@ -17,5 +18,6 @@ __all__ = [
     'CategoriesController',
     'ProductsController',
     'UsersController',
-    'SearchController'
+    'SearchController',
+    'OrderController'
 ]

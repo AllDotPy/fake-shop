@@ -86,8 +86,15 @@ class BaseModel:
                 init_kwargs[field_name] = field_type.from_json(value)
             
             # Handle datetime
-            elif field_type == datetime.date and isinstance(value, str):
-                init_kwargs[field_name] = datetime.date.fromisoformat(value)
+            elif (
+                field_type 
+                in (datetime.date, datetime.datetime) 
+                and isinstance(value, str)
+            ):
+                if field_type == datetime.date:
+                    init_kwargs[field_name] = datetime.date.fromisoformat(value)
+                else:  # field_type == datetime.datetime
+                    init_kwargs[field_name] = datetime.datetime.fromisoformat(value)
             
             # Handle simple types
             else:

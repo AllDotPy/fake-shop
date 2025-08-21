@@ -55,10 +55,10 @@ class ProductsService(FletXService):
 
         params = query + '&' if query != '' else query
 
-        flters = f'?{params}offset={page * limit}&limit={limit}'
+        filters = f'?{params}offset={page * limit}&limit={limit}'
 
         return self.http_client.get(
-            endpoint = f'/products/{flters}',
+            endpoint = f'/products/{filters}',
             headers = {
                 'Content-Type': 'application/json',
             }

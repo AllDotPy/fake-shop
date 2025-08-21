@@ -4,7 +4,7 @@ from typing import Optional
 from .base import BaseModel
 
 ####
-##      CATEGORY INFO
+##      SEARCH FILTER INFO
 #####
 @dataclass
 class SearchFilter(BaseModel):

@@ -19,6 +19,8 @@ from .productgrid_component import ProductGrid
 from .emptylist_component import EmptylistComponent
 from .cartitem_component import Cartitem
 from .cartitemlist_component import CartItemlist
+from .ordercard_component import OrderCard
+from .orderlist_component import OrderList
 
 __all__ = [
     'MyReactiveText',
@@ -33,5 +35,6 @@ __all__ = [
     'ProductGrid',
     'EmptylistComponent',
     'Cartitem',
-    'CartItemlist'
+    'CartItemlist',
+    'OrderCard'
 ]

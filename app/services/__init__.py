@@ -10,10 +10,12 @@ from .categories_service import CategoriesService
 from .products_service import ProductsService
 from .user_service import UserService
 from .auth_service import AuthService
+from .order_service import OrderService
 
 __all__ = [
     'AuthService',
     'UserService',
     'ProductsService',
-    'CategoriesService'
+    'CategoriesService',
+    'OrderService'
 ]

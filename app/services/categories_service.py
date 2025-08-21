@@ -67,19 +67,6 @@ class CategoriesService(FletXService):
             }
         )
     
-    def retrieve_by_slug(self, slug: str):
-        """Same as Retrieve method but uses slug"""
-
-        token = self.get_token('access')
-
-        return self.http_client.get(
-            endpoint = f'/categories/slug/{slug}',
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorizations': f'Bearer {token}'
-            }
-        )
-    
     def create(self, category: CategoryInfo):
         """Create a new category from provided infos."""
 

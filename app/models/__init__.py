@@ -13,6 +13,7 @@ from .product import ProductInfo
 from .banner import BannerInfo
 from .filter import SearchFilter
 from .cart_item import CartItem
+from .order import OrderInfo, OrderStatus
 
 __all__ = [
     'LoginInfo',
@@ -21,5 +22,7 @@ __all__ = [
     'ProductInfo',
     'BannerInfo',
     'SearchFilter',
-    'CartItem'
+    'CartItem',
+    'OrderInfo',
+    'OrderStatus'
 ]
