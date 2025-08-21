@@ -21,7 +21,7 @@ from app.controllers import ProductsController
 from app.components import EmptylistComponent
 
 
-class ProducrDetailsPage(FletXPage):
+class ProductDetailsPage(FletXPage):
     """Producrdetails Page"""
 
     def __init__(self):

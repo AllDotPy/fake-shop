@@ -14,8 +14,9 @@ from .pages import (
     CounterPage, NotFoundPage,
     OnboardingPage, LoginPage,
     RegisterPage, MainPage,
-    ProducrDetailsPage,
+    ProductDetailsPage,
     SearchPage, NotificationsPage,
+    OrderDetailsPage,
     store
 )
 
@@ -43,15 +44,15 @@ routes = [
     },
     {
         'path': '/product-details',
-        'component': ProducrDetailsPage
+        'component': ProductDetailsPage
     },
     {
         'path': '/search',
         'component': SearchPage
     },
     {
-        'path': '/notifications',
-        'component': NotificationsPage
+        'path': '/order-details',
+        'component': OrderDetailsPage
     },
 
     # ACCOUNT URLS
@@ -61,6 +62,10 @@ routes = [
     },
 
     # UTILITY URLS
+    {
+        'path': '/notifications',
+        'component': NotificationsPage
+    },
     {
         'path': '/counter',
         'component': CounterPage
