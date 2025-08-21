@@ -17,7 +17,6 @@ from app.controllers import (
 )
 from app.models import CartItem, OrderInfo
 from app.components import CartItemlist
-from app.utils import show_snackbar
 
 
 class ShoppingCartPage(FletXPage):
@@ -82,6 +81,118 @@ class ShoppingCartPage(FletXPage):
         )
         return order
     
+    def open_dialog(self, order: OrderInfo):
+        """Open A given Content in a dialog Box."""
+
+        # Dialog Content
+        content = Column(
+            # expand = True,
+            spacing = 10,
+            alignment = MainAxisAlignment.CENTER,
+            horizontal_alignment = CrossAxisAlignment.CENTER,
+            controls = [
+                Image(
+                    src = 'tada.png',
+                    width = 130,
+                    height = 130,
+                    fit = ImageFit.FILL
+                ),
+
+                # TITLE
+                Text(
+                    f"🎉 Order Successful!",
+                    size = 18,
+                    weight = FontWeight.BOLD
+                ),
+                # Text
+                Text(
+                    "You have successfully made Order.",
+                    size = 14,
+                ),
+
+                # Buttun
+                OutlinedButton(
+                    width = self.width,
+                    height = 50,
+                    style = ButtonStyle(
+                        bgcolor = Colors.PRIMARY,
+                    ),
+                    content = Row(
+                        alignment = MainAxisAlignment.CENTER,
+                        controls = [
+                            Text(
+                                f'Checkout now!',
+                                size = 16,
+                                color = Colors.ON_PRIMARY,
+                                weight = FontWeight.W_500
+                            ),
+                            Icon(
+                                Icons.ARROW_FORWARD,
+                                color = Colors.ON_PRIMARY
+                            ),
+                        ]
+                    ),
+                    on_click = lambda _: (
+                        navigate(
+                            '/checkout',
+                            data = {
+                                'order': order
+                            }
+                        )
+                    ),
+                ),
+
+                # VIEW ORDER
+                OutlinedButton(
+                    width = self.width,
+                    height = 50,
+                    # style = ButtonStyle(
+                    #     bgcolor = Colors.PRIMARY,
+                    # ),
+                    content = Row(
+                        alignment = MainAxisAlignment.CENTER,
+                        controls = [
+                            Text(
+                                f'Vew order details',
+                                size = 16,
+                                color = Colors.ON_PRIMARY,
+                                weight = FontWeight.W_500
+                            ),
+                            Icon(
+                                Icons.ARROW_FORWARD,
+                                color = Colors.ON_PRIMARY
+                            ),
+                        ]
+                    ),
+                    on_click = lambda _: (
+                        navigate(
+                            '/order-details',
+                            data = {
+                                'order': order
+                            }
+                        )
+                    ),
+                ),
+            ]
+        )
+
+        dlg = AlertDialog(
+            # title = Text("Hello"),
+            title_padding = 0,
+            content_padding = 10,
+            content = content,
+            alignment = alignment.center,
+            on_dismiss = lambda e: navigate(
+                '/checkout',
+                data = {
+                    'order': order
+                }
+            ),
+            title_padding = padding.all(25),
+        )
+
+        self.page_instance.open(dlg)
+    
     def save_order(self):
         """Create an Order"""
 
@@ -89,26 +200,28 @@ class ShoppingCartPage(FletXPage):
             self.build_order()
         )
         if res:
-            # Then Show A Success Popup
-            show_snackbar(
-                self.page_instance, 
-                title = "Order Successful", 
-                message = "You have successfully made Order.", 
-                type = 'success'
-            )
+            # # Then Show A Success Popup
+            # show_snackbar(
+            #     self.page_instance, 
+            #     title = "Order Successful", 
+            #     message = "You have successfully made Order.", 
+            #     type = 'success'
+            # )
+
+            # Clean Shopping Cart and go to checkout Page.
+            self.productsController.shopping_cart.clear()
 
             # Add newly created Order obejct to the list
             self.ordersController.objects.value.insert(0,res)
 
-            # Clean Shopping Cart and go to checkout Page.
-            self.items.clear()
+            self.open_dialog(order=res)
 
-            navigate(
-                '/checkout',
-                data = {
-                    'order': res
-                }
-            )
+            # navigate(
+            #     '/checkout',
+            #     data = {
+            #         'order': res
+            #     }
+            # )
 
 
     def build(self)-> Control:
@@ -206,7 +319,7 @@ class ShoppingCartPage(FletXPage):
                                                     color = Colors.ON_PRIMARY
                                                 ) if self.ordersController._is_loading.value else Container(),
                                                 Text(
-                                                    f'Checkout {self.total} FCFA',
+                                                    f'Order Now',
                                                     size = 16,
                                                     color = Colors.ON_PRIMARY,
                                                     weight = FontWeight.W_500
@@ -217,7 +330,11 @@ class ShoppingCartPage(FletXPage):
                                                 ),
                                             ]
                                         ),
-                                        on_click = lambda _: self.save_order() if not self.ordersController._is_loading.value else None,
+                                        on_click = lambda _: (
+                                            self.save_order() 
+                                            if not self.ordersController._is_loading.value 
+                                            else None
+                                        ),
                                     ),
                                 ),
                             ]

@@ -22,7 +22,7 @@ from fletx.navigation import navigate
 
 from app.models import OrderInfo
 
-class OrderCard(Container):    # 🧩 You can replace ft.Container with any other Flet control
+class OrderCard(Container):
     """Reactive Ordercard Widget"""
 
     def __init__(self, order: OrderInfo, **kwargs):

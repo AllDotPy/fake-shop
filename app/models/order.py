@@ -6,6 +6,7 @@ from typing import Optional, List, Union
 from .base import BaseModel
 from .cart_item import CartItem
 from .user import UserInfo
+from .transaction import TransactionInfo
 
 
 ####
@@ -28,6 +29,7 @@ class OrderInfo(BaseModel):
 
     articles: List[CartItem]
     client: Optional[UserInfo] = None
+    transaction: Optional[TransactionInfo] = None
     total: Optional[int] = 0
     status: Union[OrderStatus,str] = OrderStatus.WAITING_FOR_PAYMENT
     id: Optional[str] = None

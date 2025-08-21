@@ -72,8 +72,8 @@ class OrderDetailsPage(FletXPage):
                                 weight = FontWeight.W_500
                             ),
                             
-                            # # Like button
-                            # self.like_btn()
+                            # PLACE HOLDER
+                            Container()
                         ]
                     ),
 

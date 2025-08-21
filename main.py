@@ -10,7 +10,7 @@ Version: 0.1.0
 import os
 import flet as ft
 from fletx.app import FletXApp
-# from fletx.navigation import router_config
+from fletx.navigation import NavigationMode
 from app.routes import FakeshopRouter
 from app.utils.theme import light_theme, dark_theme
 
@@ -34,6 +34,7 @@ def main():
         debug = True,
         theme = light_theme,
         dark_theme = dark_theme,
+        navigation_mode = NavigationMode.VIEWS,
         # theme_mode= ft.ThemeMode.DARK,
         window_config = {
             "width": 400,

@@ -6,8 +6,9 @@ readme = "README.md"
 authors = [{ name = "pro2015", email = "" }]
 requires-python = ">=3.12"
 dependencies = [
-    "fletxr==0.1.4.a2",
+    "fletxr==0.1.4.b1",
     "flet[all]>=0.28.3",
+    "flet-webview==0.1.0",
     "httpx>=0.28.1",
     "fletcarousel>=0.0.14",
 ]
