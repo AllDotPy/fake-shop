@@ -15,6 +15,7 @@ from .shared.productdetails_page import ProductDetailsPage
 from .shared.notifications_page import NotificationsPage
 from .shared.search_page import SearchPage
 from .shared.orderdetails_page import OrderDetailsPage
+from .shared.checkout_page import CheckoutPage
 
 __all__ = [
     'CounterPage',
@@ -26,5 +27,6 @@ __all__ = [
     'ProductDetailsPage',
     'NotificationsPage',
     'SearchPage',
-    'OrderDetailsPage'
+    'OrderDetailsPage',
+    'CheckoutPage'
 ]

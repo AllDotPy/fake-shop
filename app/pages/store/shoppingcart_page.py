@@ -8,6 +8,7 @@ from flet import *
 from fletx import FletX
 from fletx.core import FletXPage, RxList
 from fletx.widgets import Obx
+from fletx.navigation import navigate
 
 # Import your modules here...
 from app.controllers import (
@@ -94,6 +95,19 @@ class ShoppingCartPage(FletXPage):
                 title = "Order Successful", 
                 message = "You have successfully made Order.", 
                 type = 'success'
+            )
+
+            # Add newly created Order obejct to the list
+            self.ordersController.objects.value.insert(0,res)
+
+            # Clean Shopping Cart and go to checkout Page.
+            self.items.clear()
+
+            navigate(
+                '/checkout',
+                data = {
+                    'order': res
+                }
             )
 
 

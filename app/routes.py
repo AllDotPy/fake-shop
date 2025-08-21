@@ -16,7 +16,7 @@ from .pages import (
     RegisterPage, MainPage,
     ProductDetailsPage,
     SearchPage, NotificationsPage,
-    OrderDetailsPage,
+    OrderDetailsPage, CheckoutPage,
     store
 )
 
@@ -53,6 +53,10 @@ routes = [
     {
         'path': '/order-details',
         'component': OrderDetailsPage
+    },
+    {
+        'path': '/checkout',
+        'component': CheckoutPage
     },
 
     # ACCOUNT URLS

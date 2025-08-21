@@ -180,14 +180,14 @@ class HomePage(FletXPage):
 
         return Column(
             expand = True,
-            scroll = ScrollMode.HIDDEN,
+            # scroll = ScrollMode.HIDDEN,
             alignment = MainAxisAlignment.START,
             horizontal_alignment = CrossAxisAlignment.CENTER,
             controls = [
                 # HEADER
                 Row(
                     width = self.width,
-                    height = 60,
+                    # height = 60,
                     alignment = MainAxisAlignment.SPACE_BETWEEN,
                     vertical_alignment = CrossAxisAlignment.CENTER,
                     controls = [
@@ -225,16 +225,57 @@ class HomePage(FletXPage):
                                 ),
                             ]
                         ),
+
+                        # SEARCH BUTTON
+                        IconButton(
+                            # icon = Icons.SEARCH_OUTLINED,
+                            padding = 0,
+                            icon_color = Colors.ON_SURFACE,
+                            on_click = lambda _: navigate('/search'),
+                            content = Container(
+                                height = 40,
+                                width = 40,
+                                border_radius= 20,
+                                bgcolor = Colors.SURFACE,
+                                border = Border(
+                                    top = BorderSide(
+                                        color = Colors.GREY_700,
+                                        width = 1
+                                    ),
+                                    bottom = BorderSide(
+                                        color = Colors.GREY_700,
+                                        width = 1
+                                    ),
+                                    left = BorderSide(
+                                        color = Colors.GREY_700,
+                                        width = 1
+                                    ),
+                                    right = BorderSide(
+                                        color = Colors.GREY_700,
+                                        width = 1
+                                    )
+                                ),
+
+                                content = Icon(
+                                    Icons.SEARCH_OUTLINED,
+                                    size = 24,
+                                    weight = 1,
+                                    color = Colors.ON_SURFACE
+                                )
+                            )
+                        ),
                         
                         # NOTIFICATION
                         IconButton(
                             # icon = Icons.NOTIFICATIONS_NONE_OUTLINED,
                             # icon_color = Colors.ON_SURFACE,
+                            padding = 0,
                             on_click = lambda _: navigate('/notifications'),
                             content = Container(
                                 height = 40,
                                 width = 40,
                                 border_radius= 20,
+                                bgcolor = Colors.SURFACE,
                                 border = Border(
                                     top = BorderSide(
                                         color = Colors.GREY_700,
@@ -265,99 +306,240 @@ class HomePage(FletXPage):
                     ]
                 ),
 
-                # SEARCH BAR
-                Container(
-                    height = 50,
-                    padding = 10,
-                    border_radius = 25,
-                    bgcolor = Colors.SURFACE,
-                    on_click = lambda _: navigate('/search'),
-
-                    # Content
-                    content = FromTextField(
-                        # label = "",
-                        hint_text = "Search for products...",
-                        # rx_value = self.rx_first_name,
-                        expand = True,
-                        disabled = True,
-                        filled = False,
-                        rx_disabled = RxBool(True),
-                        bgcolor = Colors.TRANSPARENT,
-                        focused_bgcolor = Colors.TRANSPARENT,
-
-                        # Border
-                        border_radius = 0,
-                        border = InputBorder.NONE,
-
-                        # Decoration
-                        icon = Icons.SEARCH_OUTLINED
-                    ),
-                ),
-
-                # SPACER
-                Container(
-                    height = 20
-                ),
-
-                # BANNERS
-                BasicAnimatedHorizontalCarousel(
-                    # page = self.page_instance,
-                    auto_cycle = AutoCycle(duration=4),
+                # PAGE CONTENT
+                Column(
                     expand = True,
-                    width = self.width,
-                    padding = 0,
-                    animated_switcher = AnimatedSwitcher(
-                        content = Control(), 
-                        transition = AnimatedSwitcherTransition.FADE, 
-                        duration = 500, 
-                        reverse_duration = 100,
-                    ),
-                    hint_lines = HintLine(
-                        active_color = Colors.PRIMARY,
-                        inactive_color = Colors.ON_PRIMARY_CONTAINER,
-                        alignment = MainAxisAlignment.CENTER,
-                        max_list_size = 100
-                    ),
-                    items=[
-                        Bannercard(
-                            item = i,
-                            width = self.width
-                        )
-                        for i in self.banners.value
-                    ],
-                ),
-
-                # Container(
-                #     height = 150,
-                #     width = self.width,
-                #     content = Bannerlist(
-                #         spacing = 15,
-                #         expand = True,
-                #         # height = 150,
-                #         width = self.width,
-                #         horizontal = True,
-                #         items = self.banners,
-                #     )
-                # ),
-
-                # SPACER
-                Container(
-                    height = 15
-                ),
-
-                # CATEGORIES
-                Column(
-                    width = self.width,
+                    scroll = ScrollMode.HIDDEN,
+                    horizontal_alignment = CrossAxisAlignment.CENTER,
                     controls = [
+                        # SEARCH BAR
+                        Container(
+                            height = 50,
+                            padding = 10,
+                            border_radius = 25,
+                            bgcolor = Colors.SURFACE,
+                            visible = False,
+                            on_click = lambda _: navigate('/search'),
+
+                            # Content
+                            content = FromTextField(
+                                # label = "",
+                                hint_text = "Search for products...",
+                                # rx_value = self.rx_first_name,
+                                expand = True,
+                                disabled = True,
+                                filled = False,
+                                rx_disabled = RxBool(True),
+                                bgcolor = Colors.TRANSPARENT,
+                                focused_bgcolor = Colors.TRANSPARENT,
+
+                                # Border
+                                border_radius = 0,
+                                border = InputBorder.NONE,
+
+                                # Decoration
+                                icon = Icons.SEARCH_OUTLINED
+                            ),
+                        ),
+
+                        # SPACER
+                        Container(
+                            height = 20
+                        ),
+
+                        # BANNERS
+                        BasicAnimatedHorizontalCarousel(
+                            # page = self.page_instance,
+                            auto_cycle = AutoCycle(duration=4),
+                            expand = True,
+                            width = self.width,
+                            padding = 0,
+                            animated_switcher = AnimatedSwitcher(
+                                content = Control(), 
+                                transition = AnimatedSwitcherTransition.FADE, 
+                                duration = 500, 
+                                reverse_duration = 100,
+                            ),
+                            hint_lines = HintLine(
+                                active_color = Colors.PRIMARY,
+                                inactive_color = Colors.ON_PRIMARY_CONTAINER,
+                                alignment = MainAxisAlignment.CENTER,
+                                max_list_size = 100
+                            ),
+                            items=[
+                                Bannercard(
+                                    item = i,
+                                    width = self.width
+                                )
+                                for i in self.banners.value
+                            ],
+                        ),
+
+                        # Container(
+                        #     height = 150,
+                        #     width = self.width,
+                        #     content = Bannerlist(
+                        #         spacing = 15,
+                        #         expand = True,
+                        #         # height = 150,
+                        #         width = self.width,
+                        #         horizontal = True,
+                        #         items = self.banners,
+                        #     )
+                        # ),
+
+                        # SPACER
+                        Container(
+                            height = 15
+                        ),
+
+                        # CATEGORIES
+                        Column(
+                            width = self.width,
+                            controls = [
+                                Row(
+                                    # expand = True,
+                                    alignment = MainAxisAlignment.SPACE_BETWEEN,
+                                    vertical_alignment = CrossAxisAlignment.CENTER,
+                                    controls = [
+                                        Text("Categories", size=16, weight=FontWeight.W_500),
+                                        IconButton(
+                                            icon_color=Colors.ON_PRIMARY_CONTAINER,
+                                            on_click = lambda e: navigate('/categories'),
+
+                                            content = Row(
+                                                controls = [
+                                                    Text("See all", size=14, weight=FontWeight.W_500),
+                                                    Icon(Icons.ARROW_FORWARD, size=16, color=Colors.ON_PRIMARY_CONTAINER)
+                                                ]
+                                            )
+                                        )
+                                    ]
+                                ),
+
+                                # CATEGORY LIST
+                                Container(
+                                    height = 120,
+                                    width = self.width,
+                                    # bgcolor = 'red',
+                                    content = CategoryList(
+                                        spacing = 20,
+                                        expand = True,
+                                        horizontal = True,
+                                        categories = self.categories
+                                    )
+                                )
+                            ]
+                        ),
+
+                        # SPACER
+                        Container(
+                            height = 20
+                        ),
+
+                        # BEST SELLERS
+                        Column(
+                            width = self.width,
+                            controls = [
+                                Row(
+                                    # expand = True,
+                                    alignment = MainAxisAlignment.SPACE_BETWEEN,
+                                    vertical_alignment = CrossAxisAlignment.CENTER,
+                                    controls = [
+                                        Text("Best Seller Products", size=16, weight=FontWeight.W_500),
+                                        IconButton(
+                                            icon_color=Colors.ON_PRIMARY_CONTAINER,
+                                            on_click = lambda e: navigate('/categories'),
+
+                                            content = Row(
+                                                controls = [
+                                                    Text("See all", size=14, weight=FontWeight.W_500),
+                                                    Icon(Icons.ARROW_FORWARD, size=16, color=Colors.ON_PRIMARY_CONTAINER)
+                                                ]
+                                            )
+                                        )
+                                    ]
+                                ),
+
+                                # CATEGORY LIST
+                                Container(
+                                    height = 220,
+                                    width = self.width,
+                                    # bgcolor = 'red',
+                                    content = ListView(
+                                        spacing = 10,
+                                        expand = True,
+                                        horizontal = True,
+                                        controls = [
+                                            ProductCard(product = product)
+                                            for product in self.products.value[:10]
+                                        ]
+                                    )
+                                )
+                            ]
+                        ),
+
+                        # SPACER
+                        Container(
+                            height = 20
+                        ),
+
+                        # LATEST PRODUCTS
+                        Column(
+                            width = self.width,
+                            controls = [
+                                Row(
+                                    # expand = True,
+                                    alignment = MainAxisAlignment.SPACE_BETWEEN,
+                                    vertical_alignment = CrossAxisAlignment.CENTER,
+                                    controls = [
+                                        Text("Latest Products", size=16, weight=FontWeight.W_500),
+                                        IconButton(
+                                            icon_color=Colors.ON_PRIMARY_CONTAINER,
+                                            on_click = lambda e: navigate('/products/latest'),
+
+                                            content = Row(
+                                                controls = [
+                                                    Text("See all", size=14, weight=FontWeight.W_500),
+                                                    Icon(Icons.ARROW_FORWARD, size=16, color=Colors.ON_PRIMARY_CONTAINER)
+                                                ]
+                                            )
+                                        )
+                                    ]
+                                ),
+
+                                # CATEGORY LIST
+                                Container(
+                                    height = 220,
+                                    width = self.width,
+                                    # bgcolor = 'red',
+                                    content = ListView(
+                                        spacing = 10,
+                                        expand = True,
+                                        horizontal = True,
+                                        controls = [
+                                            ProductCard(product = product)
+                                            for product in self.products.value[10:20]
+                                        ]
+                                    )
+                                )
+                            ]
+                        ),
+
+                        # SPACER
+                        Container(
+                            height = 20
+                        ),
+
                         Row(
                             # expand = True,
                             alignment = MainAxisAlignment.SPACE_BETWEEN,
                             vertical_alignment = CrossAxisAlignment.CENTER,
                             controls = [
-                                Text("Categories", size=16, weight=FontWeight.W_500),
+                                Text("Browse Our Products", size=16, weight=FontWeight.W_500),
                                 IconButton(
                                     icon_color=Colors.ON_PRIMARY_CONTAINER,
-                                    on_click = lambda e: navigate('/categories'),
+                                    on_click = lambda e: navigate('/products'),
 
                                     content = Row(
                                         controls = [
@@ -369,168 +551,36 @@ class HomePage(FletXPage):
                             ]
                         ),
 
-                        # CATEGORY LIST
-                        Container(
-                            height = 120,
+                        # PRODUCTS GRID
+                        ProductGrid(
+                            products = self.products,
+                            spacing = 10,
+                            expand = True,
                             width = self.width,
-                            # bgcolor = 'red',
-                            content = CategoryList(
-                                spacing = 20,
-                                expand = True,
-                                horizontal = True,
-                                categories = self.categories
-                            )
-                        )
-                    ]
-                ),
-
-                # SPACER
-                Container(
-                    height = 20
-                ),
-
-
-                # BEST SELLERS
-                Column(
-                    width = self.width,
-                    controls = [
-                        Row(
-                            # expand = True,
-                            alignment = MainAxisAlignment.SPACE_BETWEEN,
-                            vertical_alignment = CrossAxisAlignment.CENTER,
-                            controls = [
-                                Text("Best Seller Products", size=16, weight=FontWeight.W_500),
-                                IconButton(
-                                    icon_color=Colors.ON_PRIMARY_CONTAINER,
-                                    on_click = lambda e: navigate('/categories'),
-
-                                    content = Row(
-                                        controls = [
-                                            Text("See all", size=14, weight=FontWeight.W_500),
-                                            Icon(Icons.ARROW_FORWARD, size=16, color=Colors.ON_PRIMARY_CONTAINER)
-                                        ]
-                                    )
-                                )
-                            ]
+                            padding = padding.symmetric(
+                                vertical = 5,
+                                horizontal = 0
+                            ),
+                            runs_count = 2,
+                            run_spacing = 5,
+                            child_aspect_ratio = .80,
+                            height = self.height,
+                            build_controls_on_demand = True,
+                            cache_extent = 10
                         ),
 
-                        # CATEGORY LIST
+                        # SPACER
                         Container(
-                            height = 220,
-                            width = self.width,
-                            # bgcolor = 'red',
-                            content = ListView(
-                                spacing = 10,
-                                expand = True,
-                                horizontal = True,
-                                controls = [
-                                    ProductCard(product = product)
-                                    for product in self.products.value[:10]
-                                ]
-                            )
-                        )
-                    ]
-                ),
-
-                # SPACER
-                Container(
-                    height = 20
-                ),
-
-                # LATEST PRODUCTS
-                Column(
-                    width = self.width,
-                    controls = [
-                        Row(
-                            # expand = True,
-                            alignment = MainAxisAlignment.SPACE_BETWEEN,
-                            vertical_alignment = CrossAxisAlignment.CENTER,
-                            controls = [
-                                Text("Latest Products", size=16, weight=FontWeight.W_500),
-                                IconButton(
-                                    icon_color=Colors.ON_PRIMARY_CONTAINER,
-                                    on_click = lambda e: navigate('/products/latest'),
-
-                                    content = Row(
-                                        controls = [
-                                            Text("See all", size=14, weight=FontWeight.W_500),
-                                            Icon(Icons.ARROW_FORWARD, size=16, color=Colors.ON_PRIMARY_CONTAINER)
-                                        ]
-                                    )
-                                )
-                            ]
+                            height = 10
                         ),
 
-                        # CATEGORY LIST
-                        Container(
-                            height = 220,
-                            width = self.width,
-                            # bgcolor = 'red',
-                            content = ListView(
-                                spacing = 10,
-                                expand = True,
-                                horizontal = True,
-                                controls = [
-                                    ProductCard(product = product)
-                                    for product in self.products.value[10:20]
-                                ]
-                            )
-                        )
+                        self.load_more_button()
+
+                        # self.build_categories_tabs(),
+
+                        # Text("MainPage works!", size=24),
                     ]
                 ),
 
-                # SPACER
-                Container(
-                    height = 20
-                ),
-
-                Row(
-                    # expand = True,
-                    alignment = MainAxisAlignment.SPACE_BETWEEN,
-                    vertical_alignment = CrossAxisAlignment.CENTER,
-                    controls = [
-                        Text("Browse Our Products", size=16, weight=FontWeight.W_500),
-                        IconButton(
-                            icon_color=Colors.ON_PRIMARY_CONTAINER,
-                            on_click = lambda e: navigate('/products'),
-
-                            content = Row(
-                                controls = [
-                                    Text("See all", size=14, weight=FontWeight.W_500),
-                                    Icon(Icons.ARROW_FORWARD, size=16, color=Colors.ON_PRIMARY_CONTAINER)
-                                ]
-                            )
-                        )
-                    ]
-                ),
-
-                # PRODUCTS GRID
-                ProductGrid(
-                    products = self.products,
-                    spacing = 10,
-                    expand = True,
-                    width = self.width,
-                    padding = padding.symmetric(
-                        vertical = 5,
-                        horizontal = 0
-                    ),
-                    runs_count = 2,
-                    run_spacing = 5,
-                    child_aspect_ratio = .80,
-                    height = self.height,
-                    build_controls_on_demand = True,
-                    cache_extent = 10
-                ),
-
-                # SPACER
-                Container(
-                    height = 10
-                ),
-
-                self.load_more_button()
-
-                # self.build_categories_tabs(),
-
-                # Text("MainPage works!", size=24),
             ]
         )
