@@ -111,7 +111,7 @@ class ShoppingCartPage(FletXPage):
                 ),
 
                 # Buttun
-                OutlinedButton(
+                FilledButton(
                     width = self.width,
                     height = 50,
                     style = ButtonStyle(
@@ -143,11 +143,11 @@ class ShoppingCartPage(FletXPage):
                 ),
 
                 # VIEW ORDER
-                OutlinedButton(
+                FilledButton(
                     width = self.width,
                     height = 50,
+                    bgcolor = Theme.scaffold_bgcolor,
                     # style = ButtonStyle(
-                    #     bgcolor = Colors.PRIMARY,
                     # ),
                     content = Row(
                         alignment = MainAxisAlignment.CENTER,
@@ -178,7 +178,7 @@ class ShoppingCartPage(FletXPage):
 
         dlg = AlertDialog(
             # title = Text("Hello"),
-            title_padding = 0,
+            modal = True,
             content_padding = 10,
             content = content,
             alignment = alignment.center,
@@ -188,7 +188,7 @@ class ShoppingCartPage(FletXPage):
                     'order': order
                 }
             ),
-            title_padding = padding.all(25),
+            title_padding = padding.all(0),
         )
 
         self.page_instance.open(dlg)
@@ -201,13 +201,6 @@ class ShoppingCartPage(FletXPage):
         )
         if res:
             # # Then Show A Success Popup
-            # show_snackbar(
-            #     self.page_instance, 
-            #     title = "Order Successful", 
-            #     message = "You have successfully made Order.", 
-            #     type = 'success'
-            # )
-
             # Clean Shopping Cart and go to checkout Page.
             self.productsController.shopping_cart.clear()
 
@@ -216,13 +209,8 @@ class ShoppingCartPage(FletXPage):
 
             self.open_dialog(order=res)
 
-            # navigate(
-            #     '/checkout',
-            #     data = {
-            #         'order': res
-            #     }
-            # )
-
+        # No need to setup error handlers here
+        # The Pain Page Screen already do that for us.
 
     def build(self)-> Control:
         """Method that build ShoppingcartPage content"""

@@ -25,13 +25,18 @@ from app.controllers import ProductsController
 class Cartitem(Container):
     """Reactive Cartitem Widget"""
 
-    def __init__(self, item: CartItem, **kwargs):
+    def __init__(
+        self, item: CartItem, 
+        read_only: bool = False, 
+        **kwargs
+    ):
         # 📝 Define your reactive properties
         self.item: CartItem = item
+        self.read_only: bool = read_only
 
         # 🛠️ kwargs allows passing any Flet control arguments like bgcolor, padding, etc.
         super().__init__(
-            height = 180,
+            height = 180 if not self.read_only else 110,
             bgcolor = Colors.SURFACE,
             border_radius = 15,
             border = Border(
@@ -157,80 +162,93 @@ class Cartitem(Container):
             )
         ) # TODO: CHECK IF USER IS LOGGED IN.
 
+    def product_row(self):
+        """Buil a row containing product infomations."""
+
+        return Row(
+            # height = 80,
+            spacing = 15,
+            expand = True,
+            controls = [
+                #  Image
+                Image(
+                    height = 80,
+                    width = 80,
+                    fit = ImageFit.FILL,
+                    border_radius = 10,
+                    src = self.item.product.medias[0].file,
+                ),
+
+                # Name
+                Column(
+                    expand = True,
+                    spacing = 5,
+                    controls = [
+                        Text(
+                            f'{self.item.product.name[:150]+'...'}',
+                            size = 14,
+                            max_lines = 2,
+                            weight = FontWeight.W_400
+                        ),
+                        Row(
+                            expand = True,
+                            alignment = MainAxisAlignment.SPACE_BETWEEN,
+                            controls = [
+                                # CATEGORY
+                                Container(
+                                    padding = 4,
+                                    border_radius = 20,
+                                    bgcolor = Colors.with_opacity(.8, Theme.scaffold_bgcolor),
+                                    content = Row(
+                                        spacing = 5,
+                                        controls = [
+                                            Icon(
+                                                Icons.VERIFIED,
+                                                color = Colors.BLUE_700
+                                            ),
+                                            Text(
+                                                f"verified",
+                                                size = 12,
+                                                color = Colors.with_opacity(
+                                                    .7, Colors.ON_SURFACE
+                                                ),
+                                                weight = FontWeight.BOLD,
+                                                text_align = TextAlign.LEFT
+                                            )
+                                        ]
+                                    ),
+                                ),
+
+                                # PRICE
+                                Text(
+                                    f"{self.item.product.price} FCFA",
+                                    size = 18,
+                                    color = Colors.PRIMARY,
+                                    weight = FontWeight.BOLD,
+                                    text_align = TextAlign.LEFT
+                                ),
+                            ]
+                        )
+                    ]
+                )
+            ]
+        )
+
+    def build_read_only_widget(self):
+        """Biuild a read only CartItem Widget"""
+
+        return self.product_row()
+
     def build(self):
         """Build the component content"""
+
+        if self.read_only:
+            return self.build_read_only_widget()
 
         return Column(
             expand = True,
             controls = [
-                Row(
-                    # height = 80,
-                    spacing = 15,
-                    expand = True,
-                    controls = [
-                        #  Image
-                        Image(
-                            height = 80,
-                            width = 80,
-                            fit = ImageFit.FILL,
-                            border_radius = 10,
-                            src = self.item.product.medias[0].file,
-                        ),
-
-                        # Name
-                        Column(
-                            expand = True,
-                            spacing = 5,
-                            controls = [
-                                Text(
-                                    f'{self.item.product.name[:150]+'...'}',
-                                    size = 14,
-                                    max_lines = 2,
-                                    weight = FontWeight.W_400
-                                ),
-                                Row(
-                                    expand = True,
-                                    alignment = MainAxisAlignment.SPACE_BETWEEN,
-                                    controls = [
-                                        # CATEGORY
-                                        Container(
-                                            padding = 4,
-                                            border_radius = 20,
-                                            bgcolor = Colors.with_opacity(.8, Theme.scaffold_bgcolor),
-                                            content = Row(
-                                                spacing = 5,
-                                                controls = [
-                                                    Icon(
-                                                        Icons.VERIFIED,
-                                                        color = Colors.BLUE_700
-                                                    ),
-                                                    Text(
-                                                        f"verified",
-                                                        size = 12,
-                                                        color = Colors.with_opacity(
-                                                            .7, Colors.ON_SURFACE
-                                                        ),
-                                                        weight = FontWeight.BOLD,
-                                                        text_align = TextAlign.LEFT
-                                                    )
-                                                ]
-                                            ),
-                                        ),
-
-                                        # PRICE
-                                        Text(
-                                            f"{self.item.product.price} FCFA",
-                                            size = 18,
-                                            color = Colors.PRIMARY,
-                                            weight = FontWeight.BOLD,
-                                            text_align = TextAlign.LEFT
-                                        ),
-                                    ]
-                                )
-                            ]
-                        )
-                    ]
-                ),
+                self.product_row(),
 
                 # Divider
                 Divider(

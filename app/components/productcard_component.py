@@ -19,6 +19,7 @@ from fletx.navigation import navigate
 
 from app.controllers import ProductsController
 from app.models import ProductInfo
+# from app.utils import show_snackbar
 
 class ProductCard(Container):   
     """Reactive Productcard Widget"""
@@ -97,6 +98,13 @@ class ProductCard(Container):
     @obx
     def cart_btn(self):
         """Favorite button"""
+
+        # show_snackbar(
+        #     self.page_instance, 
+        #     title = "Order Successful", 
+        #     message = "You have successfully made Order.", 
+        #     type = 'success'
+        # )
 
         return IconButton(
             top = 56,

@@ -34,12 +34,6 @@ class CheckoutPage(FletXPage):
         """Hook called when CheckoutPage in initialized"""
 
         print("CheckoutPage is initialized")
-        show_snackbar(
-            self.page_instance, 
-            title = "Order Successful", 
-            message = "You have successfully made Order.", 
-            type = 'success'
-        )
 
     def on_destroy(self):
         """Hook called when CheckoutPage will be unmounted."""
@@ -80,14 +74,15 @@ class CheckoutPage(FletXPage):
                                 size = 16,
                                 weight = FontWeight.W_500
                             ),
-
+                            
+                            # PLACE HOLDER
                             Container(
                                 width = 40
                             )
                         ]
                     ),
                     ftwv.WebView(
-                        url = f"{self.order}",
+                        url = f"{self.order.transaction.payment_link}",
                         on_page_started = lambda _: print("Page started"),
                         on_page_ended = lambda _: print("Page ended"),
                         on_web_resource_error = lambda e: print("Page error:", e.data),
