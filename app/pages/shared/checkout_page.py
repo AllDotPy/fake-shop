@@ -70,7 +70,7 @@ class CheckoutPage(FletXPage):
 
                             # TITLE
                             Text(
-                                f"Checkout",
+                                f"Checkout {self.order.total} FCFA",
                                 size = 16,
                                 weight = FontWeight.W_500
                             ),

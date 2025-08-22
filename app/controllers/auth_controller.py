@@ -15,8 +15,9 @@ from fletx import FletX
 from fletx.core import (
     FletXController, RxInt
 )
+from fletx.utils import run_async, get_event_loop
 
-from app.services import AuthService
+from app.services import AuthService, PaymentService
 from app.models import LoginInfo, UserInfo
 from app.utils import get_storage, get_http_error_message
 
@@ -25,7 +26,12 @@ class AuthController(FletXController):
 
     def __init__(self):
         # Defining Auth service
-        self.authService: AuthService = FletX.put(AuthService(), tag = 'auth_srv')
+        self.authService: AuthService = FletX.put(
+            AuthService(), tag = 'auth_srv'
+        )
+        self.paymentService: PaymentService = FletX.put(
+            PaymentService(), tag = 'payment_srv'
+        )
         super().__init__()
 
     def on_initialized(self):
@@ -76,6 +82,11 @@ class AuthController(FletXController):
             self.set_loading(False)
             return success
 
+    def start_payment_service_ws(self):
+        """Connect Our App to the websocket server"""
+
+        get_event_loop().create_task(self.paymentService.connect())
+
     def login(self, creds: LoginInfo) -> bool:
         """Process Login request."""
 
@@ -104,6 +115,9 @@ class AuthController(FletXController):
                 get_storage().set('logged_in',True)
 
                 success =  True
+
+                # Start ws connection
+                self.start_payment_service_ws()
 
             # If request failed, set error message
             else:
@@ -149,6 +163,9 @@ class AuthController(FletXController):
                 get_storage().set('logged_in',True)
 
                 success =  True
+
+                # Start ws connection
+                self.start_payment_service_ws()
 
             # If request failed, set error message
             else:

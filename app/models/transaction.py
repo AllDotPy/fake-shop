@@ -6,7 +6,7 @@ from .base import BaseModel
 
 
 ####
-##      CATEGORY INFO
+##      TRANSACTION INFO
 #####
 @dataclass
 class TransactionInfo(BaseModel):

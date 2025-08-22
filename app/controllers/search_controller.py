@@ -128,7 +128,8 @@ class SearchController(FletXController):
         # Close loading state finally
         finally:
             self.set_loading(False)
-            self.search_results.extend(result)
+            # self.recent_search.clear()
+            self.search_results.value = result
             return result
         
 # GLOBAL INSTANCE

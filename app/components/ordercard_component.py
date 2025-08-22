@@ -20,7 +20,7 @@ from fletx.navigation import navigate
 #     simple_reactive
 # )
 
-from app.models import OrderInfo
+from app.models import OrderInfo, OrderStatus
 
 class OrderCard(Container):
     """Reactive Ordercard Widget"""
@@ -103,7 +103,7 @@ class OrderCard(Container):
                                         alignment = MainAxisAlignment.CENTER,
                                         controls = [
                                             Text(
-                                                f"details",
+                                                f"details" if self.order.status in [OrderStatus.COMPLETED, OrderStatus.DELIVERING] else 'Pay now',
                                                 size = 14,
                                                 color = Colors.with_opacity(
                                                     .7, Colors.ON_SURFACE
@@ -119,7 +119,7 @@ class OrderCard(Container):
                                     ),
 
                                     on_click = lambda _: navigate(
-                                        '/order-details',
+                                        '/order-details' if self.order.status in [OrderStatus.COMPLETED, OrderStatus.DELIVERING] else '/checkout',
                                         data = {
                                             'order': self.order
                                         }

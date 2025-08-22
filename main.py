@@ -12,6 +12,7 @@ import flet as ft
 from fletx.app import FletXApp
 from fletx.navigation import NavigationMode
 from app.routes import FakeshopRouter
+# from app.services import PaymentService
 from app.utils.theme import light_theme, dark_theme
 
 def main():
@@ -23,6 +24,7 @@ def main():
         print(os.getenv('FLETX_DEBUG'))
         page.padding = 0
         page.on_error = lambda e: print(f"Error: {e}")
+        # await PaymentService().connect()
     
     def on_shutdown(page: ft.Page):
         print("App is closed!")
@@ -35,7 +37,7 @@ def main():
         theme = light_theme,
         dark_theme = dark_theme,
         navigation_mode = NavigationMode.VIEWS,
-        # theme_mode= ft.ThemeMode.DARK,
+        theme_mode= ft.ThemeMode.SYSTEM,
         window_config = {
             "width": 400,
             "height": 810,

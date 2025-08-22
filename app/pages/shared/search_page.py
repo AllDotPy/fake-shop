@@ -66,6 +66,30 @@ class SearchPage(FletXPage):
                 )
             ]
         )
+    
+    def busy_indicator(self):
+        """Busy indicator widget"""
+
+        return Container(
+            expand = True,
+            bgcolor = Colors.SURFACE,
+            border_radius = 15,
+
+            content = Column(
+                expand = True,
+                alignment = MainAxisAlignment.CENTER,
+                horizontal_alignment = CrossAxisAlignment.CENTER,
+                controls = [
+                    ProgressRing(
+                        height = 50,
+                        width = 50
+                    ),
+                    Text(
+                        'Searching...'
+                    )
+                ]
+            )
+        )
 
     def build(self)-> Control:
         """Method that build SearchPage content"""
@@ -155,8 +179,11 @@ class SearchPage(FletXPage):
                             width = self.width,
                             # bgcolor = 'red',
                             content = (
-                                self.search_history_and_suggestions()
-                                if self.search_controller.enabled.value 
+                                # self.search_history_and_suggestions()
+                                # if self.search_controller.enabled.value 
+                                # else 
+                                self.busy_indicator() 
+                                if self.search_controller._is_loading.value
                                 else Column(
                                     expand = True,
                                     alignment = MainAxisAlignment.START,
