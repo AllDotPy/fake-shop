@@ -89,7 +89,7 @@ class OrdersPage(FletXPage):
         tabs = Tabs(
             expand = True,
             padding = 0,
-            selected_index = 1,
+            selected_index = 0,
             animation_duration = 300,
 
             # TABS
@@ -191,7 +191,7 @@ class OrdersPage(FletXPage):
                 # HEADER
                 Row(
                     width = self.width,
-                    # height = 60,
+                    height = 40,
                     alignment = MainAxisAlignment.CENTER,
                     vertical_alignment = CrossAxisAlignment.CENTER,
                     controls = [

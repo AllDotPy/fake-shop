@@ -77,7 +77,7 @@ class FavoritesPage(FletXPage):
                 # HEADER
                 Row(
                     width = self.width,
-                    # height = 60,
+                    height = 40,
                     alignment = MainAxisAlignment.CENTER,
                     vertical_alignment = CrossAxisAlignment.CENTER,
                     controls = [

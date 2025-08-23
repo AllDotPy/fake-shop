@@ -18,6 +18,7 @@ from fletx.core import (
 from fletx.decorators import (
     reactive_list
 )
+from fletx.utils import get_page
 
 from .ordercard_component import OrderCard
 from .emptylist_component import EmptylistComponent
@@ -29,11 +30,12 @@ from app.models import OrderInfo
         order = item
     ),
     empty_builder = lambda: EmptylistComponent(
-        message = 'Your Shopping cart is emplty',
+        message = 'Your Order list is emplty',
+        width = get_page().width
         # expand = True
     )
 )
-class OrderList(ft.ListView):
+class OrderList(ft.Column):
     """Reactive Orderlist Widget"""
 
     def __init__(self, orders: RxList[OrderInfo], **kwargs):
@@ -41,4 +43,7 @@ class OrderList(ft.ListView):
         self.orders: RxList[OrderInfo] = orders
 
         # 🛠️ kwargs allows passing any Flet control arguments like bgcolor, padding, etc.
-        super().__init__(**kwargs)
+        super().__init__(
+            scroll = ft.ScrollMode.AUTO,
+            **kwargs
+        )

@@ -18,6 +18,7 @@ from fletx.core import (
 from fletx.decorators import (
     reactive_list
 )
+from fletx.utils import get_page
 
 from app.models import CartItem
 from .cartitem_component import Cartitem
@@ -30,10 +31,11 @@ from .emptylist_component import EmptylistComponent
     ),
     empty_builder = lambda: EmptylistComponent(
         message = 'Your Shopping cart is emplty',
+        width = get_page().width
         # expand = True
     )
 )
-class CartItemlist(ft.ListView):
+class CartItemlist(ft.Column):
     """Reactive Cartitemlist Widget"""
 
     def __init__(self, items: RxList[CartItem], **kwargs):

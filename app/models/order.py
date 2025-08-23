@@ -15,7 +15,7 @@ from .transaction import TransactionInfo
 class OrderStatus(str, Enum):
     """Order available status"""
 
-    WAITING_FOR_PAYMENT = 'WAITING_FOR_PAYMENT'
+    WAITING_FOR_PAYMENT = 'WAITING'
     DELIVERING = 'DELIVERING'
     COMPLETED = 'COMPLETED'
 

@@ -87,6 +87,7 @@ class ShoppingCartPage(FletXPage):
         # Dialog Content
         content = Column(
             # expand = True,
+            height = 320,
             spacing = 10,
             alignment = MainAxisAlignment.CENTER,
             horizontal_alignment = CrossAxisAlignment.CENTER,
@@ -109,6 +110,8 @@ class ShoppingCartPage(FletXPage):
                     "You have successfully made Order.",
                     size = 14,
                 ),
+
+                Container(),
 
                 # Buttun
                 FilledButton(
@@ -146,7 +149,7 @@ class ShoppingCartPage(FletXPage):
                 FilledButton(
                     width = self.width,
                     height = 50,
-                    bgcolor = Theme.scaffold_bgcolor,
+                    bgcolor = Colors.SECONDARY,
                     # style = ButtonStyle(
                     # ),
                     content = Row(
@@ -178,7 +181,7 @@ class ShoppingCartPage(FletXPage):
 
         dlg = AlertDialog(
             # title = Text("Hello"),
-            modal = True,
+            # modal = True,
             content_padding = 10,
             content = content,
             alignment = alignment.center,
@@ -223,7 +226,7 @@ class ShoppingCartPage(FletXPage):
                 # HEADER
                 Row(
                     width = self.width,
-                    # height = 60,
+                    height = 40,
                     alignment = MainAxisAlignment.CENTER,
                     vertical_alignment = CrossAxisAlignment.CENTER,
                     controls = [
@@ -329,8 +332,5 @@ class ShoppingCartPage(FletXPage):
                         )
                     ),
                 ),
-                
-
-                # Text(f"ShoppingcartPage works! {len(self.productsController.shopping_cart.value)}", size=24),
             ]
         )

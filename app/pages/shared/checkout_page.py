@@ -8,7 +8,8 @@ from flet import *
 from typing import Optional
 import flet_webview as ftwv
 from fletx.core import FletXPage
-from fletx.navigation import go_back
+from fletx.navigation import go_back, navigate
+from fletx.utils import run_async
 
 # Import your modules here...
 from app.models import OrderInfo
@@ -39,6 +40,110 @@ class CheckoutPage(FletXPage):
         """Hook called when CheckoutPage will be unmounted."""
 
         print("CheckoutPage is destroyed")
+
+    async def open_dialog(self):
+        """Open A given Content in a dialog Box."""
+
+        import asyncio
+        await asyncio.sleep(10)
+
+        # Dialog Content
+        content = Column(
+            # expand = True,
+            height = 320,
+            spacing = 10,
+            alignment = MainAxisAlignment.CENTER,
+            horizontal_alignment = CrossAxisAlignment.CENTER,
+            controls = [
+                Image(
+                    src = 'tada.png',
+                    width = 130,
+                    height = 130,
+                    fit = ImageFit.FILL
+                ),
+
+                # TITLE
+                Text(
+                    f"🎉 Payment Successful!",
+                    size = 18,
+                    weight = FontWeight.BOLD
+                ),
+                # Text
+                Text(
+                    f"You have Successful paid {self.order.total} FCFA!.",
+                    size = 14,
+                ),
+
+                Container(),
+
+                # VIEW ORDER
+                FilledButton(
+                    width = self.width,
+                    height = 50,
+                    bgcolor = Colors.PRIMARY,
+                    # style = ButtonStyle(
+                    # ),
+                    content = Row(
+                        alignment = MainAxisAlignment.CENTER,
+                        controls = [
+                            Text(
+                                f'View Order',
+                                size = 16,
+                                color = Colors.ON_PRIMARY,
+                                weight = FontWeight.W_500
+                            ),
+                            Icon(
+                                Icons.ARROW_FORWARD,
+                                color = Colors.ON_PRIMARY
+                            ),
+                        ]
+                    ),
+                    on_click = lambda _: navigate(
+                        '/order-details',
+                        data = {
+                            'order': self.order
+                        }
+                    ),
+                ),
+
+                # RETURN HOME
+                FilledButton(
+                    width = self.width,
+                    height = 50,
+                    bgcolor = Colors.SECONDARY,
+                    # style = ButtonStyle(
+                    # ),
+                    content = Row(
+                        alignment = MainAxisAlignment.CENTER,
+                        controls = [
+                            Text(
+                                f'Return Home',
+                                size = 16,
+                                color = Colors.ON_PRIMARY,
+                                weight = FontWeight.W_500
+                            ),
+                            Icon(
+                                Icons.ARROW_FORWARD,
+                                color = Colors.ON_PRIMARY
+                            ),
+                        ]
+                    ),
+                    on_click = lambda _: go_back(),
+                ),
+            ]
+        )
+
+        dlg = AlertDialog(
+            # title = Text("Hello"),
+            # modal = True,
+            content_padding = 10,
+            content = content,
+            alignment = alignment.center,
+            on_dismiss = lambda e: go_back(),
+            title_padding = padding.all(0),
+        )
+
+        self.page_instance.open(dlg)
 
     def build(self)-> Control:
         """Method that build CheckoutPage content"""
@@ -83,7 +188,7 @@ class CheckoutPage(FletXPage):
                     ),
                     ftwv.WebView(
                         url = f"{self.order.transaction.payment_link}",
-                        on_page_started = lambda _: print("Page started"),
+                        on_page_started = lambda _: run_async(self.open_dialog),
                         on_page_ended = lambda _: print("Page ended"),
                         on_web_resource_error = lambda e: print("Page error:", e.data),
                         expand = True,

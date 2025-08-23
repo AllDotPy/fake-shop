@@ -67,7 +67,7 @@ def show_loader(
                 ),
                 alignment = alignment.center,
                 on_dismiss = lambda e: print("Dialog dismissed!"),
-                title_padding = padding.all(25),
+                title_padding = padding.all(10),
             )
             show_loader.dlg = dlg
 
