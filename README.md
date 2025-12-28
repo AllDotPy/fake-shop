@@ -1,3 +1,5 @@
+https://github.com/user-attachments/assets/399562a7-04d1-4ae8-ba84-2bd3cafb802a
+
 # Fakeshop
 
 🎯 **FletXShop** – A minimalist e-commerce showcase app built with [Flet](https://flet.dev) and [FletX](https://github.com/AllDotPy/FletX).
